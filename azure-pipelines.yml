@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  AzureDemoServer
+  vmImage: ubuntu-latest
 
 steps:
 - task: Maven@3
