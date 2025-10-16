@@ -9,6 +9,11 @@ trigger:
 pool: AzureDemoServer
 
 steps:
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitecture: 'x64'
+    jdkSourceOption: 'PreInstalled'
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
