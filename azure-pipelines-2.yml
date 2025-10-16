@@ -1,14 +1,12 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
 - master
 
 pool: AzureDemoServer
 
 steps:
+# -----------------------------
+# 1. Build with Maven
+# -----------------------------
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
@@ -19,22 +17,56 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'clean install'
+
+# -----------------------------
+# 2. Copy .war to staging
+# -----------------------------
 - task: CopyFiles@2
   inputs:
-    Contents: '**/.war'
-    TargetFolder: '$(build.artifactstagingdirectory)'
+    Contents: '**/*.war'     # FIXED typo: changed .war to *.war
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+# -----------------------------
+# 3. Publish build artifact
+# -----------------------------
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'warfile'
     publishLocation: 'Container'
+
+# -----------------------------
+# 4. Docker login
+# -----------------------------
 - task: Docker@2
   inputs:
     containerRegistry: 'DockerHubCon'
     command: 'login'
+
+# -----------------------------
+# 5. Build & Push Docker image
+# -----------------------------
 - task: Docker@2
   inputs:
     containerRegistry: 'DockerHubCon'
     repository: 'tmag84/demoazuredevops'
     command: 'buildAndPush'
     Dockerfile: '**/AzureDockerfile'
+
+# -----------------------------
+# 6. Download artifact before deploy
+# -----------------------------
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'warfile'
+    downloadPath: '$(System.ArtifactsDirectory)'
+
+# -----------------------------
+# 7. Deploy to Azure App Service
+# -----------------------------
+- task: AzureWebApp@1
+  inputs:
+    appName: 'AzureDemoApp'  # <-- Replace this!
+    package: '$(System.ArtifactsDirectory)/warfile/**/*.war'
