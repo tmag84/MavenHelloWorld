@@ -68,5 +68,6 @@ steps:
 # -----------------------------
 - task: AzureWebApp@1
   inputs:
+    azureSubscription: 'FreeAzureConn'
     appName: 'AzureDemoApp'  # <-- Replace this!
     package: '$(System.ArtifactsDirectory)/warfile/**/*.war'
