@@ -4,6 +4,18 @@ trigger:
 pool: AzureDemoServer
 
 steps:
+
+# -----------------------------
+# 0. Diagnose Chrome + ChromeDriver
+# -----------------------------
+- script: |
+    echo "=== Diagnosing Chrome and ChromeDriver ==="
+    which google-chrome && google-chrome --version || echo "google-chrome not found"
+    which chromium-browser && chromium-browser --version || echo "chromium-browser not found"
+    which chromedriver && chromedriver --version || echo "chromedriver not found"
+    echo "=========================================="
+  displayName: 'Diagnose Chrome & ChromeDriver'
+
 # -----------------------------
 # 1. Build with Maven
 # -----------------------------
@@ -23,7 +35,7 @@ steps:
 # -----------------------------
 - task: CopyFiles@2
   inputs:
-    Contents: '**/*.war'     # FIXED typo: changed .war to *.war
+    Contents: '**/*.war'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 # -----------------------------
@@ -69,5 +81,5 @@ steps:
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'FreeAzureConn'
-    appName: 'AzureDemoApp'  # <-- Replace this!
+    appName: 'AzureDemoApp'
     package: '$(System.ArtifactsDirectory)/warfile/**/*.war'
