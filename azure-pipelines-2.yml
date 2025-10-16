@@ -9,11 +9,6 @@ trigger:
 pool: AzureDemoServer
 
 steps:
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '11'
-    jdkArchitecture: 'x64'
-    jdkSourceOption: 'PreInstalled'
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
@@ -24,6 +19,11 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
 - task: Docker@2
   inputs:
     containerRegistry: 'DockerHubCon'
