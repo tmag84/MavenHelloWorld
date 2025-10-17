@@ -51,7 +51,7 @@ steps:
     containerRegistry: 'DockerHubCon'
     repository: 'tmag84/demoazuredevops'
     command: 'buildAndPush'
-    Dockerfile: 'azp-agent-linux.dockerfile'  # updated file name
+    Dockerfile: '**/AzureDockerfile'  # updated file name
     tags: 'latest'  # optionally specify tags
 
 # -----------------------------
